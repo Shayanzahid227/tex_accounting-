@@ -11,6 +11,7 @@ import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/utils/snackbar_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class UploadInvoiceScreen extends StatelessWidget {
   const UploadInvoiceScreen({super.key});
@@ -49,166 +50,234 @@ class UploadInvoiceScreen extends StatelessWidget {
         ),
         body: Consumer<InvoiceViewModel>(
           builder: (context, model, child) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 20.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 12.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: primaryColor,
-                          child: Icon(
-                            Icons.person,
-                            color: whiteColor,
-                            size: 20.sp,
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome back,',
-                              style: style12N.copyWith(color: greyBorderColor),
-                            ),
-                            Text(
-                              clientName,
-                              style: style16B.copyWith(color: primaryColor),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 40.h),
-                  Text('Submit New Invoice', style: style18B),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Please select a clear photo of your invoice',
-                    style: style14.copyWith(color: greyBorderColor),
-                  ),
-                  SizedBox(height: 24.h),
-                  GestureDetector(
-                    onTap: () => _showImageSourceDialog(context, model),
-                    child: Container(
-                      height: 220.h,
-                      width: double.infinity,
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.h),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 12.h,
+                      ),
                       decoration: BoxDecoration(
-                        color: offWhiteColor,
-                        borderRadius: BorderRadius.circular(20.r),
-                        border: Border.all(
-                          color: primaryColor.withOpacity(0.3),
-                          width: 2,
-                          style: BorderStyle.solid,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: primaryColor.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                        color: primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: primaryColor,
+                            child: Icon(
+                              Icons.person,
+                              color: whiteColor,
+                              size: 20.sp,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Welcome back,',
+                                style: style12N.copyWith(
+                                  color: greyBorderColor,
+                                ),
+                              ),
+                              Text(
+                                clientName,
+                                style: style16B.copyWith(color: primaryColor),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      child:
-                          model.selectedImage == null
-                              ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(15.sp),
-                                    decoration: BoxDecoration(
-                                      color: primaryColor.withOpacity(0.1),
-                                      shape: BoxShape.circle,
+                    ),
+                    SizedBox(height: 40.h),
+                    Text('Submit New Invoice', style: style18B),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Please select a clear photo of your invoice',
+                      style: style14.copyWith(color: greyBorderColor),
+                    ),
+                    SizedBox(height: 24.h),
+                    GestureDetector(
+                      onTap: () => _showImageSourceDialog(context, model),
+                      child: Container(
+                        height: 220.h,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: offWhiteColor,
+                          borderRadius: BorderRadius.circular(20.r),
+                          border: Border.all(
+                            color: primaryColor.withOpacity(0.3),
+                            width: 2,
+                            style: BorderStyle.solid,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child:
+                            model.selectedImage == null
+                                ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(15.sp),
+                                      decoration: BoxDecoration(
+                                        color: primaryColor.withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.add_a_photo_rounded,
+                                        size: 40.sp,
+                                        color: primaryColor,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      Icons.add_a_photo_rounded,
-                                      size: 40.sp,
-                                      color: primaryColor,
+                                    SizedBox(height: 16.h),
+                                    Text(
+                                      'Tap to Select Image',
+                                      style: style14B.copyWith(
+                                        color: primaryColor,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 16.h),
-                                  Text(
-                                    'Tap to Select Image',
-                                    style: style14B.copyWith(
-                                      color: primaryColor,
+                                    Text(
+                                      'Camera or Gallery',
+                                      style: style12.copyWith(
+                                        color: greyBorderColor,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    'Camera or Gallery',
-                                    style: style12.copyWith(
-                                      color: greyBorderColor,
+                                  ],
+                                )
+                                : Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(20.r),
+                                      child: Image.file(
+                                        File(model.selectedImage!.path),
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              )
-                              : Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                    child: Image.file(
-                                      File(model.selectedImage!.path),
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // Logic to clear image can be added to viewmodel
-                                      },
-                                      child: CircleAvatar(
-                                        backgroundColor: redColor,
-                                        radius: 12.r,
-                                        child: Icon(
-                                          Icons.close,
-                                          color: whiteColor,
-                                          size: 16.sp,
+                                    Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          // Logic to clear image can be added to viewmodel
+                                        },
+                                        child: CircleAvatar(
+                                          backgroundColor: redColor,
+                                          radius: 12.r,
+                                          child: Icon(
+                                            Icons.close,
+                                            color: whiteColor,
+                                            size: 16.sp,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                    ),
-                  ),
-                  const Spacer(),
-                  model.state == ViewState.busy
-                      ? const Center(child: CircularProgressIndicator())
-                      : CustomButton(
-                        onTap: () async {
-                          final success = await model.uploadInvoice();
-                          if (success) {
-                            SnackBarUtils.showTopSnackBar(
-                              context,
-                              'Invoice submitted successfully!',
-                              backgroundColor: primaryColor,
-                            );
-                          } else if (model.selectedImage == null) {
-                            SnackBarUtils.showTopSnackBar(
-                              context,
-                              'Please select an image first',
-                            );
-                          }
-                        },
-                        text: 'Submit Invoice',
-                        backgroundColor: primaryColor,
+                                  ],
+                                ),
                       ),
-                  SizedBox(height: 30.h),
-                ],
+                    ),
+                    SizedBox(height: 20.h),
+                    Text('Invoice Date', style: style16B),
+                    SizedBox(height: 8.h),
+                    GestureDetector(
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: model.selectedDate,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: ColorScheme.light(
+                                  primary: primaryColor,
+                                  onPrimary: whiteColor,
+                                  onSurface: Colors.black,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (picked != null && picked != model.selectedDate) {
+                          model.setSelectedDate(picked);
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 14.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: offWhiteColor,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: primaryColor.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              color: primaryColor,
+                              size: 20.sp,
+                            ),
+                            SizedBox(width: 12.w),
+                            Text(
+                              DateFormat(
+                                'MMMM dd, yyyy',
+                              ).format(model.selectedDate),
+                              style: style14B.copyWith(color: primaryColor),
+                            ),
+                            const Spacer(),
+                            Icon(
+                              Icons.arrow_drop_down_rounded,
+                              color: primaryColor,
+                              size: 24.sp,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 40.h),
+                    model.state == ViewState.busy
+                        ? const Center(child: CircularProgressIndicator())
+                        : CustomButton(
+                          onTap: () async {
+                            final success = await model.uploadInvoice();
+                            if (success) {
+                              SnackBarUtils.showTopSnackBar(
+                                context,
+                                'Invoice submitted successfully!',
+                                backgroundColor: primaryColor,
+                              );
+                            } else if (model.selectedImage == null) {
+                              SnackBarUtils.showTopSnackBar(
+                                context,
+                                'Please select an image first',
+                              );
+                            }
+                          },
+                          text: 'Submit Invoice',
+                          backgroundColor: primaryColor,
+                        ),
+                    SizedBox(height: 30.h),
+                  ],
+                ),
               ),
             );
           },

@@ -20,6 +20,14 @@ class InvoiceViewModel extends BaseViewModel {
   XFile? _selectedImage;
   XFile? get selectedImage => _selectedImage;
 
+  DateTime _selectedDate = DateTime.now();
+  DateTime get selectedDate => _selectedDate;
+
+  void setSelectedDate(DateTime date) {
+    _selectedDate = date;
+    notifyListeners();
+  }
+
   Future<void> pickImage(ImageSource source) async {
     final XFile? image = await _picker.pickImage(source: source);
     if (image != null) {
@@ -40,7 +48,7 @@ class InvoiceViewModel extends BaseViewModel {
         id: const Uuid().v4(),
         userId: user.id,
         imageUrl: _selectedImage!.path, // In prototype, using local path as URL
-        uploadDate: DateTime.now(),
+        uploadDate: _selectedDate,
       );
 
       await _databaseServices.uploadInvoice(invoice);
