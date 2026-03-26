@@ -6,12 +6,14 @@ class DatabaseServices {
     AppUser(
       id: '1',
       name: 'John Doe',
+      email: 'john@example.com',
       uniqueNumber: 'abc123',
       role: UserRole.client,
     ),
     AppUser(
       id: '2',
       name: 'Jane Smith',
+      email: 'jane@example.com',
       uniqueNumber: 'xyz789',
       role: UserRole.client,
     ),

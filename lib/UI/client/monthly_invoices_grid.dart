@@ -13,12 +13,14 @@ class MonthlyInvoicesGrid extends StatelessWidget {
   final String monthName;
   final int monthIndex;
   final String? userId;
+  final int selectedYear;
 
   const MonthlyInvoicesGrid({
     super.key,
     required this.monthName,
     required this.monthIndex,
     this.userId,
+    required this.selectedYear,
   });
 
   @override
@@ -44,13 +46,13 @@ class MonthlyInvoicesGrid extends StatelessWidget {
               ),
             ],
           ),
-          backgroundColor: whiteColor,
+          backgroundColor: Colors.deepPurple[900],
           elevation: 0,
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: blackColor,
+              color: whiteColor,
               size: 20,
             ),
             onPressed: () => Navigator.pop(context),
@@ -70,7 +72,11 @@ class MonthlyInvoicesGrid extends StatelessWidget {
 
                 final invoices =
                     snapshot.data
-                        ?.where((inv) => inv.uploadDate.month == monthIndex)
+                        ?.where(
+                          (inv) =>
+                              inv.uploadDate.month == monthIndex &&
+                              inv.uploadDate.year == selectedYear,
+                        )
                         .toList() ??
                     [];
 

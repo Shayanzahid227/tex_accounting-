@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-const Color primaryColor = Color(0xFF6A5AE0); // Deep attractive Indigo/Purple
-const Color secondaryColor = Color(0xFF9885FE); // Light complementary purple
-const Color ternaryColor = Color(0xff011627);
+const Color primaryColor = Color(0xFF0C1050); // Dark Navy Blue
+const Color secondaryColor = Color(0xFFFEE487); // Yellow/Gold
+const Color ternaryColor = Color(0xFFCE9838); // Dark Gold
 const Color backgroundColor = Color(0xffFFFBFC);
 const Color lightGreyColor = Color(0xffB0B0B0);
 Color thinGreyColor = Color(0xFFF7F7F7);

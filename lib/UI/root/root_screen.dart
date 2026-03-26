@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:girl_clan/UI/upload_invoice/upload_invoice_screen.dart';
-import 'package:girl_clan/UI/client/my_invoices_screen.dart';
+import 'package:girl_clan/UI/client/yearly_invoices_screen.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 
 class RootScreen extends StatefulWidget {
@@ -15,7 +15,7 @@ class _RootScreenState extends State<RootScreen> {
 
   final List<Widget> _screens = [
     const UploadInvoiceScreen(),
-    const MyInvoicesScreen(),
+    const YearlyInvoicesScreen(),
   ];
 
   @override
@@ -23,8 +23,9 @@ class _RootScreenState extends State<RootScreen> {
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: primaryColor,
         currentIndex: _currentIndex,
-        selectedItemColor: primaryColor,
+        selectedItemColor: ternaryColor,
         onTap: (index) {
           setState(() {
             _currentIndex = index;

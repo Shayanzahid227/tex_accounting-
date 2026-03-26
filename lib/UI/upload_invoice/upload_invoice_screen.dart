@@ -31,7 +31,7 @@ class UploadInvoiceScreen extends StatelessWidget {
         backgroundColor: whiteColor,
         appBar: AppBar(
           title: Text('Upload Invoice', style: style20B),
-          backgroundColor: whiteColor,
+          backgroundColor: Colors.deepPurple[900],
           elevation: 0,
           centerTitle: true,
           actions: [

@@ -8,8 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MyInvoicesScreen extends StatelessWidget {
-  const MyInvoicesScreen({super.key, this.userId});
+  const MyInvoicesScreen({super.key, this.userId, required this.selectedYear});
   final String? userId;
+  final int selectedYear;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class MyInvoicesScreen extends StatelessWidget {
 
     final List<String> months = List.generate(
       12,
-      (index) => DateFormat('MMMM').format(DateTime(2024, index + 1)),
+      (index) => DateFormat('MMMM').format(DateTime(selectedYear, index + 1)),
     );
 
     return Scaffold(
@@ -33,7 +34,7 @@ class MyInvoicesScreen extends StatelessWidget {
             ),
           ],
         ),
-        backgroundColor: whiteColor,
+        backgroundColor: Colors.deepPurple[900],
         elevation: 0,
         centerTitle: true,
       ),
@@ -90,6 +91,7 @@ class MyInvoicesScreen extends StatelessWidget {
                           monthName: months[index],
                           monthIndex: index + 1,
                           userId: userId,
+                          selectedYear: selectedYear,
                         ),
                   ),
                 );

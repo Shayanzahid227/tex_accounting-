@@ -34,8 +34,10 @@ class _AdminRootScreenState extends State<AdminRootScreen> {
       child: Scaffold(
         body: IndexedStack(index: _currentIndex, children: _screens),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: primaryColor,
           currentIndex: _currentIndex,
-          selectedItemColor: secondaryColor,
+          selectedItemColor: ternaryColor,
+          unselectedItemColor: whiteColor,
           onTap: (index) {
             setState(() {
               _currentIndex = index;

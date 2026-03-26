@@ -2,6 +2,7 @@ import 'package:girl_clan/core/others/base_view_model.dart';
 
 import 'package:girl_clan/core/model/user_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthServices extends BaseViewModel {
   DatabaseServices? _databaseServices;
@@ -42,6 +43,33 @@ class AuthServices extends BaseViewModel {
       role: UserRole.client,
     );
     return _currentUser;
+  }
+
+  Future<AppUser?> register(String name, String email, String password) async {
+    if (_databaseServices != null) {
+      // Check if password already exists
+      final existingUser = await _databaseServices!.getUserByUniqueNumber(
+        password,
+      );
+      if (existingUser != null) {
+        throw Exception(
+          'This password is already in use by another account. Please choose a different one.',
+        );
+      }
+
+      final newUser = AppUser(
+        id: const Uuid().v4(),
+        name: name,
+        email: email,
+        uniqueNumber: password,
+        role: UserRole.client,
+      );
+
+      await _databaseServices!.addClient(newUser);
+      _currentUser = newUser;
+      return _currentUser;
+    }
+    return null;
   }
 
   void logout() {

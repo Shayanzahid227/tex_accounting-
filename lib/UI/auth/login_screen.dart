@@ -9,6 +9,7 @@ import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/user_model.dart';
 import 'package:girl_clan/UI/root/root_screen.dart'; // Client Root
 import 'package:girl_clan/UI/admin/admin_root_screen.dart'; // Admin Root
+import 'package:girl_clan/UI/auth/sign_up_screen.dart';
 import 'package:girl_clan/core/utils/snackbar_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: MediaQuery.of(context).size.height * 1,
         padding: EdgeInsets.symmetric(horizontal: 24.w),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -53,11 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: primaryColor.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        Icons.account_balance_wallet_rounded,
-                        size: 70.sp,
-                        color: primaryColor,
-                      ),
+                      child: Icon(Icons.key, size: 70.sp, color: primaryColor),
                     ),
                   ),
                   SizedBox(height: 48.h),
@@ -77,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 48.h),
                   Text(
-                    'Unique Login ID',
+                    'Password',
                     style: style14B.copyWith(color: ternaryColor),
                   ),
                   SizedBox(height: 10.h),
@@ -94,10 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextField(
                       controller: _loginController,
                       style: style16,
+                      obscureText: true,
                       decoration: customAuthField3.copyWith(
-                        hintText: 'e.g. abc-123',
+                        hintText: 'Enter your password',
                         prefixIcon: const Icon(
-                          Icons.vpn_key_rounded,
+                          Icons.lock_outline_rounded,
                           color: primaryColor,
                         ),
                       ),
@@ -121,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (_loginController.text.isEmpty) {
                             SnackBarUtils.showTopSnackBar(
                               context,
-                              'Please enter your unique number',
+                              'Please enter your password',
                             );
                             return;
                           }
@@ -149,12 +148,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Don't have an ID? ", style: style14),
+                      Text(
+                        "Don't have an account? ",
+                        style: style14.copyWith(color: whiteColor),
+                      ),
                       GestureDetector(
-                        onTap: () => _loginController.text = 'admin',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpScreen(),
+                            ),
+                          );
+                        },
                         child: Text(
-                          'Contact Admin',
-                          style: style14B.copyWith(color: primaryColor),
+                          'Sign Up',
+                          style: style14B.copyWith(color: ternaryColor),
                         ),
                       ),
                     ],

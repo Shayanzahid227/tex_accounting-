@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -33,9 +33,12 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.receipt_long, size: 100.sp, color: whiteColor),
-            SizedBox(height: 20.h),
-            Text('Tax App', style: style25B.copyWith(color: whiteColor)),
+            Image.asset(
+              'assets/static_assets/splashImage.png',
+              width: MediaQuery.of(context).size.width * 1,
+              height: MediaQuery.of(context).size.height * 1,
+              fit: BoxFit.contain,
+            ),
           ],
         ),
       ),

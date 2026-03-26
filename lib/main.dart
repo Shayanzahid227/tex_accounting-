@@ -39,10 +39,14 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Tax Accounting',
+            title: 'Prime Tax Accounting',
             theme: ThemeData(
               primarySwatch: Colors.teal,
               fontFamily: 'Quicksand',
+              scaffoldBackgroundColor: Colors.deepPurple[900],
+              appBarTheme: const AppBarTheme(
+                iconTheme: IconThemeData(color: Colors.white),
+              ),
             ),
             home: const SplashScreen(),
           );

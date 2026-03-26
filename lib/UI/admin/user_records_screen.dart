@@ -4,7 +4,7 @@ import 'package:girl_clan/UI/admin/admin_view_model.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
-import 'package:girl_clan/UI/client/my_invoices_screen.dart';
+import 'package:girl_clan/UI/client/yearly_invoices_screen.dart';
 import 'package:provider/provider.dart';
 
 class UserRecordsScreen extends StatefulWidget {
@@ -29,7 +29,7 @@ class _UserRecordsScreenState extends State<UserRecordsScreen> {
       backgroundColor: offWhiteColor,
       appBar: AppBar(
         title: Text('User Directory', style: style20B),
-        backgroundColor: whiteColor,
+        backgroundColor: Colors.deepPurple[900],
         elevation: 0,
         centerTitle: true,
       ),
@@ -168,7 +168,7 @@ class _UserRecordsScreenState extends State<UserRecordsScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder:
-                                            (context) => MyInvoicesScreen(
+                                            (context) => YearlyInvoicesScreen(
                                               userId: user.id,
                                             ),
                                       ),

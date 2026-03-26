@@ -25,4 +25,18 @@ class AuthViewModel extends BaseViewModel {
       return null;
     }
   }
+
+  Future<AppUser?> register(String name, String email, String password) async {
+    setState(ViewState.busy);
+    _errorMessage = null;
+    try {
+      final user = await _authServices.register(name, email, password);
+      setState(ViewState.idle);
+      return user;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      setState(ViewState.idle);
+      return null;
+    }
+  }
 }
