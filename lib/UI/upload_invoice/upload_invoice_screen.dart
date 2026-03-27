@@ -28,7 +28,6 @@ class UploadInvoiceScreen extends StatelessWidget {
             authServices: Provider.of(context, listen: false),
           ),
       child: Scaffold(
-        backgroundColor: whiteColor,
         appBar: AppBar(
           title: Text('Upload Invoice', style: style20B),
           backgroundColor: Colors.deepPurple[900],

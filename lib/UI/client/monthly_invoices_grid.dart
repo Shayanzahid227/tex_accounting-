@@ -35,7 +35,6 @@ class MonthlyInvoicesGrid extends StatelessWidget {
             authServices: Provider.of(context, listen: false),
           ),
       child: Scaffold(
-        backgroundColor: offWhiteColor,
         appBar: AppBar(
           title: Column(
             children: [

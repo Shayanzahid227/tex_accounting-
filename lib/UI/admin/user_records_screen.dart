@@ -26,7 +26,6 @@ class _UserRecordsScreenState extends State<UserRecordsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: offWhiteColor,
       appBar: AppBar(
         title: Text('User Directory', style: style20B),
         backgroundColor: Colors.deepPurple[900],

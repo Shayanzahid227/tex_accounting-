@@ -23,7 +23,6 @@ class MyInvoicesScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: offWhiteColor,
       appBar: AppBar(
         title: Column(
           children: [

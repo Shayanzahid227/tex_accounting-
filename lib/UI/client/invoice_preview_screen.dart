@@ -11,7 +11,6 @@ class InvoicePreviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: blackColor,
       appBar: AppBar(
         backgroundColor: transparentColor,
         elevation: 0,

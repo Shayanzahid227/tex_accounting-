@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:girl_clan/UI/auth/login_screen.dart';
-import 'package:girl_clan/core/constants/colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,7 +25,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
