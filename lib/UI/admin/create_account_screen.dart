@@ -19,7 +19,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Dashboard', style: style20B),
+        backgroundColor: Colors.deepPurple[900],
+        title: Text(
+          'Admin Dashboard',
+          style: style20B.copyWith(color: whiteColor),
+        ),
 
         elevation: 0,
         centerTitle: true,

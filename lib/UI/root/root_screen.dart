@@ -26,6 +26,7 @@ class _RootScreenState extends State<RootScreen> {
         backgroundColor: primaryColor,
         currentIndex: _currentIndex,
         selectedItemColor: ternaryColor,
+        unselectedItemColor: whiteColor,
         onTap: (index) {
           setState(() {
             _currentIndex = index;

@@ -38,7 +38,10 @@ class MonthlyInvoicesGrid extends StatelessWidget {
         appBar: AppBar(
           title: Column(
             children: [
-              Text('$monthName Invoices', style: style20B),
+              Text(
+                '$monthName Invoices',
+                style: style20B.copyWith(color: whiteColor),
+              ),
               Text(
                 clientName,
                 style: style12N.copyWith(color: greyBorderColor),

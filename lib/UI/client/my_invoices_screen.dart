@@ -26,7 +26,10 @@ class MyInvoicesScreen extends StatelessWidget {
       appBar: AppBar(
         title: Column(
           children: [
-            Text('Invoice Library', style: style20B),
+            Text(
+              'Invoice Library',
+              style: style20B.copyWith(color: whiteColor),
+            ),
             Text(
               'Welcome, $clientName',
               style: style12N.copyWith(color: greyBorderColor),

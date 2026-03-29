@@ -27,7 +27,10 @@ class _UserRecordsScreenState extends State<UserRecordsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Directory', style: style20B),
+        title: Text(
+          'User Directory',
+          style: style20B.copyWith(color: whiteColor),
+        ),
         backgroundColor: Colors.deepPurple[900],
         elevation: 0,
         centerTitle: true,

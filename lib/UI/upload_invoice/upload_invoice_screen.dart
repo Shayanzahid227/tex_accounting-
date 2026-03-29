@@ -29,7 +29,10 @@ class UploadInvoiceScreen extends StatelessWidget {
           ),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Upload Invoice', style: style20B),
+          title: Text(
+            'Upload Invoice',
+            style: style20B.copyWith(color: whiteColor),
+          ),
           backgroundColor: Colors.deepPurple[900],
           elevation: 0,
           centerTitle: true,
@@ -87,7 +90,7 @@ class UploadInvoiceScreen extends StatelessWidget {
                               ),
                               Text(
                                 clientName,
-                                style: style16B.copyWith(color: primaryColor),
+                                style: style16B.copyWith(color: ternaryColor),
                               ),
                             ],
                           ),
@@ -95,7 +98,10 @@ class UploadInvoiceScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 40.h),
-                    Text('Submit New Invoice', style: style18B),
+                    Text(
+                      'Submit New Invoice',
+                      style: style18B.copyWith(color: whiteColor),
+                    ),
                     SizedBox(height: 8.h),
                     Text(
                       'Please select a clear photo of your invoice',

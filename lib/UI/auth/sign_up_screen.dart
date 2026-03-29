@@ -225,12 +225,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Already have an account? ", style: style14),
+                      Text(
+                        "Already have an account? ",
+                        style: style14.copyWith(color: whiteColor),
+                      ),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Text(
                           'Login',
-                          style: style14B.copyWith(color: primaryColor),
+                          style: style14B.copyWith(color: ternaryColor),
                         ),
                       ),
                     ],
