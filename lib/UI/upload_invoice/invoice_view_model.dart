@@ -4,6 +4,7 @@ import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/core/services/auth_services.dart';
 import 'package:girl_clan/core/model/invoice_model.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class InvoiceViewModel extends BaseViewModel {
@@ -20,6 +21,9 @@ class InvoiceViewModel extends BaseViewModel {
   XFile? _selectedImage;
   XFile? get selectedImage => _selectedImage;
 
+  PlatformFile? _selectedDocument;
+  PlatformFile? get selectedDocument => _selectedDocument;
+
   DateTime _selectedDate = DateTime.now();
   DateTime get selectedDate => _selectedDate;
 
@@ -29,15 +33,54 @@ class InvoiceViewModel extends BaseViewModel {
   }
 
   Future<void> pickImage(ImageSource source) async {
-    final XFile? image = await _picker.pickImage(source: source);
-    if (image != null) {
-      _selectedImage = image;
+    _pickerError = null;
+    try {
+      final XFile? image = await _picker.pickImage(source: source);
+      if (image != null) {
+        _selectedImage = image;
+        _selectedDocument = null; // Clear document if image is picked
+        notifyListeners();
+      }
+    } catch (e) {
+      _pickerError = 'Failed to pick image: ${e.toString()}';
       notifyListeners();
     }
   }
 
+  String? _pickerError;
+  String? get pickerError => _pickerError;
+
+  Future<void> pickDocument() async {
+    _pickerError = null;
+    try {
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        _selectedDocument = result.files.first;
+        _selectedImage = null; // Clear image if document is picked
+        notifyListeners();
+      } else {
+        // User cancelled the picker
+        print('User cancelled file picker');
+      }
+    } catch (e) {
+      _pickerError = 'Failed to pick document: ${e.toString()}';
+      print(_pickerError);
+      notifyListeners();
+    }
+  }
+
+  void clearSelection() {
+    _selectedImage = null;
+    _selectedDocument = null;
+    notifyListeners();
+  }
+
   Future<bool> uploadInvoice() async {
-    if (_selectedImage == null) return false;
+    if (_selectedImage == null && _selectedDocument == null) return false;
 
     setState(ViewState.busy);
     try {
@@ -47,12 +90,17 @@ class InvoiceViewModel extends BaseViewModel {
       final invoice = Invoice(
         id: const Uuid().v4(),
         userId: user.id,
-        imageUrl: _selectedImage!.path, // In prototype, using local path as URL
+        imageUrl:
+            _selectedImage != null
+                ? _selectedImage!.path
+                : _selectedDocument!.path!,
         uploadDate: _selectedDate,
+        isImage: _selectedImage != null,
+        fileName: _selectedDocument?.name,
       );
 
       await _databaseServices.uploadInvoice(invoice);
-      _selectedImage = null;
+      clearSelection();
       setState(ViewState.idle);
       return true;
     } catch (e) {

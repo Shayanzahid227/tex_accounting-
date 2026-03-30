@@ -144,10 +144,48 @@ class MonthlyInvoicesGrid extends StatelessWidget {
                                 borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(16.r),
                                 ),
-                                child: Image.file(
-                                  File(invoices[index].imageUrl),
-                                  fit: BoxFit.cover,
-                                ),
+                                child:
+                                    invoices[index].isImage
+                                        ? Hero(
+                                          tag: invoices[index].imageUrl,
+                                          child: Image.file(
+                                            File(invoices[index].imageUrl),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                        : Container(
+                                          color: primaryColor.withOpacity(0.05),
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.description_rounded,
+                                                  size: 60.sp,
+                                                  color: primaryColor,
+                                                ),
+                                                SizedBox(height: 8.h),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 12.w,
+                                                  ),
+                                                  child: Text(
+                                                    invoices[index].fileName ??
+                                                        'Document',
+                                                    style: style12B.copyWith(
+                                                      color: primaryColor,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                               ),
                             ),
                             Padding(

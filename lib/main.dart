@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Prime Tax Accounting',
+            title: 'Prime Tax',
             theme: ThemeData(
               primarySwatch: Colors.teal,
               fontFamily: 'Quicksand',

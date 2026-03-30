@@ -104,12 +104,12 @@ class UploadInvoiceScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'Please select a clear photo of your invoice',
+                      'Please select a clear photo or document of your invoice',
                       style: style14.copyWith(color: greyBorderColor),
                     ),
                     SizedBox(height: 24.h),
                     GestureDetector(
-                      onTap: () => _showImageSourceDialog(context, model),
+                      onTap: () => _showFileSourceDialog(context, model),
                       child: Container(
                         height: 220.h,
                         width: double.infinity,
@@ -130,7 +130,8 @@ class UploadInvoiceScreen extends StatelessWidget {
                           ],
                         ),
                         child:
-                            model.selectedImage == null
+                            model.selectedImage == null &&
+                                    model.selectedDocument == null
                                 ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -141,20 +142,20 @@ class UploadInvoiceScreen extends StatelessWidget {
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(
-                                        Icons.add_a_photo_rounded,
+                                        Icons.cloud_upload_rounded,
                                         size: 40.sp,
                                         color: primaryColor,
                                       ),
                                     ),
                                     SizedBox(height: 16.h),
                                     Text(
-                                      'Tap to Select Image',
+                                      'Tap to Upload',
                                       style: style14B.copyWith(
                                         color: primaryColor,
                                       ),
                                     ),
                                     Text(
-                                      'Camera or Gallery',
+                                      'Photo, Gallery or Document',
                                       style: style12.copyWith(
                                         color: greyBorderColor,
                                       ),
@@ -163,22 +164,57 @@ class UploadInvoiceScreen extends StatelessWidget {
                                 )
                                 : Stack(
                                   children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(20.r),
-                                      child: Image.file(
-                                        File(model.selectedImage!.path),
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        height: double.infinity,
+                                    if (model.selectedImage != null)
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          20.r,
+                                        ),
+                                        child: Image.file(
+                                          File(model.selectedImage!.path),
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                        ),
+                                      )
+                                    else if (model.selectedDocument != null)
+                                      Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.description_rounded,
+                                              size: 80.sp,
+                                              color: primaryColor,
+                                            ),
+                                            SizedBox(height: 12.h),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 20.w,
+                                              ),
+                                              child: Text(
+                                                model.selectedDocument!.name,
+                                                style: style14B,
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            SizedBox(height: 4.h),
+                                            Text(
+                                              '${(model.selectedDocument!.size / 1024).toStringAsFixed(1)} KB',
+                                              style: style12.copyWith(
+                                                color: greyBorderColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
                                     Positioned(
                                       top: 10,
                                       right: 10,
                                       child: GestureDetector(
-                                        onTap: () {
-                                          // Logic to clear image can be added to viewmodel
-                                        },
+                                        onTap: () => model.clearSelection(),
                                         child: CircleAvatar(
                                           backgroundColor: redColor,
                                           radius: 12.r,
@@ -195,7 +231,10 @@ class UploadInvoiceScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    Text('Invoice Date', style: style16B),
+                    Text(
+                      'Invoice Date',
+                      style: style16B.copyWith(color: whiteColor),
+                    ),
                     SizedBox(height: 8.h),
                     GestureDetector(
                       onTap: () async {
@@ -270,10 +309,11 @@ class UploadInvoiceScreen extends StatelessWidget {
                                 'Invoice submitted successfully!',
                                 backgroundColor: primaryColor,
                               );
-                            } else if (model.selectedImage == null) {
+                            } else if (model.selectedImage == null &&
+                                model.selectedDocument == null) {
                               SnackBarUtils.showTopSnackBar(
                                 context,
-                                'Please select an image first',
+                                'Please select a file first',
                               );
                             }
                           },
@@ -291,7 +331,7 @@ class UploadInvoiceScreen extends StatelessWidget {
     );
   }
 
-  void _showImageSourceDialog(BuildContext context, InvoiceViewModel model) {
+  void _showFileSourceDialog(BuildContext context, InvoiceViewModel model) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -303,7 +343,7 @@ class UploadInvoiceScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Select Image Source', style: style18B),
+                Text('Select File Source', style: style18B),
                 SizedBox(height: 20.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -311,17 +351,43 @@ class UploadInvoiceScreen extends StatelessWidget {
                     _sourceOption(
                       icon: Icons.camera_alt_rounded,
                       label: 'Camera',
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        model.pickImage(ImageSource.camera);
+                        await model.pickImage(ImageSource.camera);
+                        if (context.mounted && model.pickerError != null) {
+                          SnackBarUtils.showTopSnackBar(
+                            context,
+                            model.pickerError!,
+                          );
+                        }
                       },
                     ),
                     _sourceOption(
                       icon: Icons.photo_library_rounded,
                       label: 'Gallery',
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        model.pickImage(ImageSource.gallery);
+                        await model.pickImage(ImageSource.gallery);
+                        if (context.mounted && model.pickerError != null) {
+                          SnackBarUtils.showTopSnackBar(
+                            context,
+                            model.pickerError!,
+                          );
+                        }
+                      },
+                    ),
+                    _sourceOption(
+                      icon: Icons.description_rounded,
+                      label: 'Document',
+                      onTap: () async {
+                        Navigator.pop(context);
+                        await model.pickDocument();
+                        if (context.mounted && model.pickerError != null) {
+                          SnackBarUtils.showTopSnackBar(
+                            context,
+                            model.pickerError!,
+                          );
+                        }
                       },
                     ),
                   ],
