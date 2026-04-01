@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/UI/client/monthly_invoices_grid.dart';
+import 'package:girl_clan/UI/client/invoice_category_screen.dart';
 import 'package:girl_clan/core/services/auth_services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +89,7 @@ class MyInvoicesScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder:
-                        (context) => MonthlyInvoicesGrid(
+                        (context) => InvoiceCategoryScreen(
                           monthName: months[index],
                           monthIndex: index + 1,
                           userId: userId,

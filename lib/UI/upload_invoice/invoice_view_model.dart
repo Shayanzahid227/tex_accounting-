@@ -27,6 +27,14 @@ class InvoiceViewModel extends BaseViewModel {
   DateTime _selectedDate = DateTime.now();
   DateTime get selectedDate => _selectedDate;
 
+  InvoiceType? _selectedType;
+  InvoiceType? get selectedType => _selectedType;
+
+  void setSelectedType(InvoiceType type) {
+    _selectedType = type;
+    notifyListeners();
+  }
+
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
     notifyListeners();
@@ -76,11 +84,15 @@ class InvoiceViewModel extends BaseViewModel {
   void clearSelection() {
     _selectedImage = null;
     _selectedDocument = null;
+    _selectedType = null;
     notifyListeners();
   }
 
   Future<bool> uploadInvoice() async {
-    if (_selectedImage == null && _selectedDocument == null) return false;
+    if ((_selectedImage == null && _selectedDocument == null) ||
+        _selectedType == null) {
+      return false;
+    }
 
     setState(ViewState.busy);
     try {
@@ -97,6 +109,7 @@ class InvoiceViewModel extends BaseViewModel {
         uploadDate: _selectedDate,
         isImage: _selectedImage != null,
         fileName: _selectedDocument?.name,
+        type: _selectedType!,
       );
 
       await _databaseServices.uploadInvoice(invoice);

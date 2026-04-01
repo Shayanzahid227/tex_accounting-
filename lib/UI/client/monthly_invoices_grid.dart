@@ -6,7 +6,6 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/invoice_model.dart';
 import 'package:girl_clan/UI/client/invoice_preview_screen.dart';
-import 'package:girl_clan/core/services/auth_services.dart';
 import 'package:provider/provider.dart';
 
 class MonthlyInvoicesGrid extends StatelessWidget {
@@ -14,6 +13,7 @@ class MonthlyInvoicesGrid extends StatelessWidget {
   final int monthIndex;
   final String? userId;
   final int selectedYear;
+  final InvoiceType category;
 
   const MonthlyInvoicesGrid({
     super.key,
@@ -21,13 +21,11 @@ class MonthlyInvoicesGrid extends StatelessWidget {
     required this.monthIndex,
     this.userId,
     required this.selectedYear,
+    required this.category,
   });
 
   @override
   Widget build(BuildContext context) {
-    final authServices = Provider.of<AuthServices>(context, listen: false);
-    final clientName = authServices.currentUser?.name ?? 'Client';
-
     return ChangeNotifierProvider(
       create:
           (context) => InvoiceViewModel(
@@ -39,11 +37,11 @@ class MonthlyInvoicesGrid extends StatelessWidget {
           title: Column(
             children: [
               Text(
-                '$monthName Invoices',
+                '${category == InvoiceType.bank ? 'Bank Statement' : category == InvoiceType.invoice ? 'Regular' : 'Other'} Invoices',
                 style: style20B.copyWith(color: whiteColor),
               ),
               Text(
-                clientName,
+                '$monthName $selectedYear',
                 style: style12N.copyWith(color: greyBorderColor),
               ),
             ],
@@ -71,13 +69,14 @@ class MonthlyInvoicesGrid extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
+ 
                 final invoices =
                     snapshot.data
                         ?.where(
                           (inv) =>
                               inv.uploadDate.month == monthIndex &&
-                              inv.uploadDate.year == selectedYear,
+                              inv.uploadDate.year == selectedYear &&
+                              inv.type == category,
                         )
                         .toList() ??
                     [];

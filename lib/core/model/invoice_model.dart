@@ -1,3 +1,5 @@
+enum InvoiceType { bank, invoice, other }
+
 class Invoice {
   final String id;
   final String userId;
@@ -5,6 +7,7 @@ class Invoice {
   final DateTime uploadDate;
   final bool isImage;
   final String? fileName;
+  final InvoiceType type;
 
   Invoice({
     required this.id,
@@ -13,5 +16,6 @@ class Invoice {
     required this.uploadDate,
     this.isImage = true,
     this.fileName,
+    required this.type,
   });
 }

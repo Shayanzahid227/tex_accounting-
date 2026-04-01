@@ -10,6 +10,7 @@ import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/utils/snackbar_utils.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:girl_clan/core/model/invoice_model.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -232,6 +233,45 @@ class UploadInvoiceScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20.h),
                     Text(
+                      'Select Category',
+                      style: style16B.copyWith(color: whiteColor),
+                    ),
+                    SizedBox(height: 12.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _categoryOption(
+                            context: context,
+                            model: model,
+                            type: InvoiceType.bank,
+                            label: 'Bank Statement',
+                            icon: Icons.account_balance_rounded,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: _categoryOption(
+                            context: context,
+                            model: model,
+                            type: InvoiceType.invoice,
+                            label: 'Invoice',
+                            icon: Icons.receipt_long_rounded,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: _categoryOption(
+                            context: context,
+                            model: model,
+                            type: InvoiceType.other,
+                            label: 'Other',
+                            icon: Icons.more_horiz_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20.h),
+                    Text(
                       'Invoice Date',
                       style: style16B.copyWith(color: whiteColor),
                     ),
@@ -309,11 +349,20 @@ class UploadInvoiceScreen extends StatelessWidget {
                                 'Invoice submitted successfully!',
                                 backgroundColor: primaryColor,
                               );
-                            } else if (model.selectedImage == null &&
-                                model.selectedDocument == null) {
+                            } else {
+                              String message = 'Failed to submit invoice';
+                              Color snackColor = redColor;
+                              if (model.selectedImage == null &&
+                                  model.selectedDocument == null) {
+                                message = 'Please select a file first';
+                              } else if (model.selectedType == null) {
+                                message = 'Please select invoice type';
+                                snackColor = Colors.red;
+                              }
                               SnackBarUtils.showTopSnackBar(
                                 context,
-                                'Please select a file first',
+                                message,
+                                backgroundColor: snackColor,
                               );
                             }
                           },
@@ -396,6 +445,58 @@ class UploadInvoiceScreen extends StatelessWidget {
               ],
             ),
           ),
+    );
+  }
+
+  Widget _categoryOption({
+    required BuildContext context,
+    required InvoiceViewModel model,
+    required InvoiceType type,
+    required String label,
+    required IconData icon,
+  }) {
+    final isSelected = model.selectedType == type;
+    return GestureDetector(
+      onTap: () => model.setSelectedType(type),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 16.h),
+        decoration: BoxDecoration(
+          color: isSelected ? primaryColor : offWhiteColor,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: isSelected ? primaryColor : primaryColor.withOpacity(0.1),
+            width: 1.5,
+          ),
+          boxShadow:
+              isSelected
+                  ? [
+                    BoxShadow(
+                      color: primaryColor.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                  : null,
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? whiteColor : primaryColor,
+              size: 24.sp,
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              label,
+              style: style12B.copyWith(
+                color: isSelected ? whiteColor : primaryColor,
+                fontSize: 10.sp,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
