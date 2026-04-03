@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:girl_clan/UI/upload_invoice/upload_invoice_screen.dart';
 import 'package:girl_clan/UI/client/yearly_invoices_screen.dart';
+import 'package:girl_clan/UI/client/notifications_screen.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 
 class RootScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _RootScreenState extends State<RootScreen> {
   final List<Widget> _screens = [
     const UploadInvoiceScreen(),
     const YearlyInvoicesScreen(),
+    const NotificationsScreen(),
   ];
 
   @override
@@ -40,6 +42,11 @@ class _RootScreenState extends State<RootScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt),
             label: 'My Invoices',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications_none_rounded),
+            activeIcon: Icon(Icons.notifications_active_rounded),
+            label: 'Notifications',
           ),
         ],
       ),

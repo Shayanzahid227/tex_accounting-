@@ -263,6 +263,16 @@ class UploadInvoiceScreen extends StatelessWidget {
                           child: _categoryOption(
                             context: context,
                             model: model,
+                            type: InvoiceType.payroll,
+                            label: 'Payroll',
+                            icon: Icons.payments_rounded,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: _categoryOption(
+                            context: context,
+                            model: model,
                             type: InvoiceType.other,
                             label: 'Other',
                             icon: Icons.more_horiz_rounded,
@@ -459,7 +469,8 @@ class UploadInvoiceScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => model.setSelectedType(type),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 16.h),
+        height: 85.h,
+        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.w),
         decoration: BoxDecoration(
           color: isSelected ? primaryColor : offWhiteColor,
           borderRadius: BorderRadius.circular(12.r),
@@ -479,6 +490,7 @@ class UploadInvoiceScreen extends StatelessWidget {
                   : null,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
@@ -493,6 +505,8 @@ class UploadInvoiceScreen extends StatelessWidget {
                 fontSize: 10.sp,
               ),
               textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

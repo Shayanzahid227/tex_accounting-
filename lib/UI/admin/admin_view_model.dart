@@ -2,6 +2,7 @@ import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/core/model/user_model.dart';
+import 'package:girl_clan/core/model/notification_model.dart';
 import 'package:uuid/uuid.dart';
 
 class AdminViewModel extends BaseViewModel {
@@ -59,5 +60,19 @@ class AdminViewModel extends BaseViewModel {
     await _databaseServices.deleteClient(userId);
     await fetchClients();
     setState(ViewState.idle);
+  }
+
+  Future<bool> sendNotification(String message) async {
+    if (message.isEmpty) return false;
+    setState(ViewState.busy);
+    try {
+      final notification = NotificationModel.createNew(message);
+      await _databaseServices.addNotification(notification);
+      setState(ViewState.idle);
+      return true;
+    } catch (e) {
+      setState(ViewState.idle);
+      return false;
+    }
   }
 }

@@ -21,7 +21,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: 50.h),
+                   SizedBox(height: 50.h),
                   Center(
                     child: Container(
                       padding: EdgeInsets.all(20.sp),
@@ -69,11 +70,43 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 12.h),
                   Text(
-                    'Manage your taxes effortlessly',
+                    'Your Privacy, Our Priority',
                     style: style16N.copyWith(color: greyBorderColor),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 48.h),
+
+                  // Email Field
+                  Text(
+                    'Email or Admin ID',
+                    style: style14B.copyWith(color: ternaryColor),
+                  ),
+                  SizedBox(height: 10.h),
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: blackColor.withOpacity(0.05),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _emailController,
+                      style: style16,
+                      decoration: customAuthField3.copyWith(
+                        hintText: 'e.g. email@example.com',
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // Password Field
                   Text(
                     'Password',
                     style: style14B.copyWith(color: ternaryColor),
@@ -90,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     child: TextField(
-                      controller: _loginController,
+                      controller: _passwordController,
                       style: style16,
                       obscureText: true,
                       decoration: customAuthField3.copyWith(
@@ -117,14 +150,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         text: 'Login Now',
                         backgroundColor: primaryColor,
                         onTap: () async {
-                          if (_loginController.text.isEmpty) {
+                          final identifier = _emailController.text.trim();
+                          final password = _passwordController.text;
+
+                          if (identifier.isEmpty) {
                             SnackBarUtils.showTopSnackBar(
                               context,
-                              'Please enter your password',
+                              'Please enter your Email or Admin ID',
                             );
                             return;
                           }
-                          final user = await model.login(_loginController.text);
+
+                          if (password.isEmpty) {
+                            SnackBarUtils.showTopSnackBar(
+                              context,
+                              'Please enter your password to continue',
+                            );
+                            return;
+                          }
+
+                          final user = await model.login(
+                            identifier,
+                            password: password,
+                          );
+
                           if (user != null) {
                             if (user.role == UserRole.client) {
                               Navigator.pushReplacement(
@@ -141,6 +190,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             }
+                          } else if (model.errorMessage != null) {
+                            SnackBarUtils.showTopSnackBar(
+                              context,
+                              model.errorMessage!,
+                            );
                           }
                         },
                       ),

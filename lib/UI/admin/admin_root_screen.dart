@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:girl_clan/UI/admin/admin_view_model.dart';
-import 'package:girl_clan/UI/admin/create_account_screen.dart';
+import 'package:girl_clan/UI/admin/notify_client_screen.dart';
 import 'package:girl_clan/UI/admin/user_records_screen.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
@@ -17,7 +17,7 @@ class _AdminRootScreenState extends State<AdminRootScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const CreateAccountScreen(),
+    const NotifyClientScreen(),
     const UserRecordsScreen(),
   ];
 
@@ -45,8 +45,8 @@ class _AdminRootScreenState extends State<AdminRootScreen> {
           },
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_add),
-              label: 'Create Account',
+              icon: Icon(Icons.notifications_active),
+              label: 'Notify',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.supervised_user_circle),

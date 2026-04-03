@@ -196,20 +196,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         text: 'Sign Up',
                         backgroundColor: primaryColor,
                         onTap: () async {
-                          if (_nameController.text.isEmpty ||
-                              _emailController.text.isEmpty ||
-                              _passwordController.text.isEmpty) {
+                          final name = _nameController.text.trim();
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text;
+
+                          if (name.isEmpty) {
                             SnackBarUtils.showTopSnackBar(
                               context,
-                              'Please fill all fields',
+                              'Please enter your full name',
                             );
                             return;
                           }
+                          if (email.isEmpty) {
+                            SnackBarUtils.showTopSnackBar(
+                              context,
+                              'Please enter your email address',
+                            );
+                            return;
+                          }
+                          if (password.isEmpty) {
+                            SnackBarUtils.showTopSnackBar(
+                              context,
+                              'Please choose a unique password/number',
+                            );
+                            return;
+                          }
+
                           final user = await model.register(
-                            _nameController.text,
-                            _emailController.text,
-                            _passwordController.text,
+                            name,
+                            email,
+                            password,
                           );
+
                           if (user != null) {
                             Navigator.pushAndRemoveUntil(
                               context,
@@ -217,6 +235,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 builder: (context) => const RootScreen(),
                               ),
                               (route) => false,
+                            );
+                          } else if (model.errorMessage != null) {
+                            SnackBarUtils.showTopSnackBar(
+                              context,
+                              model.errorMessage!,
                             );
                           }
                         },

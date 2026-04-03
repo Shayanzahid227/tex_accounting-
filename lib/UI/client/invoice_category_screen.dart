@@ -87,6 +87,15 @@ class InvoiceCategoryScreen extends StatelessWidget {
             SizedBox(height: 16.h),
             _categoryFolder(
               context,
+              title: 'Payroll',
+              subtitle: 'Employee payroll and tax records',
+              type: InvoiceType.payroll,
+              icon: Icons.payments_rounded,
+              color: Colors.purple,
+            ),
+            SizedBox(height: 16.h),
+            _categoryFolder(
+              context,
               title: 'Other',
               subtitle: 'Other tax-related documents',
               type: InvoiceType.other,

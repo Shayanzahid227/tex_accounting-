@@ -37,7 +37,13 @@ class MonthlyInvoicesGrid extends StatelessWidget {
           title: Column(
             children: [
               Text(
-                '${category == InvoiceType.bank ? 'Bank Statement' : category == InvoiceType.invoice ? 'Regular' : 'Other'} Invoices',
+                '${category == InvoiceType.bank
+                    ? 'Bank Statement'
+                    : category == InvoiceType.invoice
+                    ? 'Regular'
+                    : category == InvoiceType.payroll
+                    ? 'Payroll'
+                    : 'Other'} Invoices',
                 style: style20B.copyWith(color: whiteColor),
               ),
               Text(
@@ -69,7 +75,7 @@ class MonthlyInvoicesGrid extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
- 
+
                 final invoices =
                     snapshot.data
                         ?.where(

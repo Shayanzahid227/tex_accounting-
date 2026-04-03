@@ -4,6 +4,11 @@ import 'package:girl_clan/UI/auth/login_screen.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:girl_clan/UI/auth/auth_view_model.dart';
+import 'package:girl_clan/core/model/user_model.dart';
+import 'package:girl_clan/UI/root/root_screen.dart';
+import 'package:girl_clan/UI/admin/admin_root_screen.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,12 +23,31 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () async {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
+        final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+        await authViewModel.checkSession();
+
+        if (!mounted) return;
+
+        if (authViewModel.currentUser != null) {
+          if (authViewModel.currentUser!.role == UserRole.admin) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminRootScreen()),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const RootScreen()),
+            );
+          }
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
       }
     });
 

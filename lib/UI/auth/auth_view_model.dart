@@ -12,15 +12,17 @@ class AuthViewModel extends BaseViewModel {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  Future<AppUser?> login(String uniqueNumber) async {
+  AppUser? get currentUser => _authServices.currentUser;
+
+  Future<AppUser?> login(String identifier, {String? password}) async {
     setState(ViewState.busy);
     _errorMessage = null;
     try {
-      final user = await _authServices.login(uniqueNumber);
+      final user = await _authServices.login(identifier, password: password);
       setState(ViewState.idle);
       return user;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
       setState(ViewState.idle);
       return null;
     }
@@ -38,5 +40,11 @@ class AuthViewModel extends BaseViewModel {
       setState(ViewState.idle);
       return null;
     }
+  }
+
+  Future<void> checkSession() async {
+    setState(ViewState.busy);
+    await _authServices.checkSession();
+    setState(ViewState.idle);
   }
 }
