@@ -21,6 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -169,12 +170,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: TextField(
                       controller: _passwordController,
                       style: style16,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       decoration: customAuthField3.copyWith(
                         hintText: 'Must be unique',
                         prefixIcon: const Icon(
                           Icons.lock_outline_rounded,
                           color: primaryColor,
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() => _obscurePassword = !_obscurePassword);
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                            color: primaryColor,
+                          ),
                         ),
                       ),
                     ),

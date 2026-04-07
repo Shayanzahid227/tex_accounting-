@@ -41,12 +41,18 @@ class DatabaseServices {
   }
 
   Future<List<AppUser>> getAllClients() async {
-    final querySnapshot = await _usersCollection
-        .where('role', isEqualTo: UserRole.client.name)
-        .get();
-    return querySnapshot.docs
-        .map((doc) => AppUser.fromMap(doc.data() as Map<String, dynamic>))
-        .toList();
+    try {
+      final querySnapshot = await _usersCollection
+          .where('role', isEqualTo: UserRole.client.name)
+          .get()
+          .timeout(const Duration(seconds: 15));
+      return querySnapshot.docs
+          .map((doc) => AppUser.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('Firestore getAllClients failed: $e');
+      rethrow;
+    }
   }
 
   Future<void> addClient(AppUser user) async {
@@ -55,6 +61,18 @@ class DatabaseServices {
     } catch (e) {
       debugPrint('Firestore addClient timed out or failed: $e');
       throw Exception('Failed to save user data. Please try again.');
+    }
+  }
+
+  Future<void> upsertUser(AppUser user) async {
+    try {
+      await _usersCollection
+          .doc(user.id)
+          .set(user.toMap(), SetOptions(merge: true))
+          .timeout(const Duration(seconds: 10));
+    } catch (e) {
+      debugPrint('Firestore upsertUser failed: $e');
+      rethrow;
     }
   }
 
@@ -84,17 +102,34 @@ class DatabaseServices {
   }
 
   Future<List<Invoice>> getInvoicesByUser(String userId) async {
-    final querySnapshot = await _invoicesCollection
-        .where('userId', isEqualTo: userId)
-        .orderBy('uploadDate', descending: true)
-        .get();
-    return querySnapshot.docs
-        .map((doc) => Invoice.fromMap(doc.data() as Map<String, dynamic>))
-        .toList();
+    try {
+      final querySnapshot = await _invoicesCollection
+          .where('userId', isEqualTo: userId)
+          .orderBy('uploadDate', descending: true)
+          .get()
+          .timeout(const Duration(seconds: 15));
+
+      return querySnapshot.docs
+          .map((doc) => Invoice.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      // Fallback (e.g. missing index / transient errors): fetch without orderBy then sort locally.
+      debugPrint('Firestore getInvoicesByUser failed (ordered). Falling back. Error: $e');
+      final querySnapshot = await _invoicesCollection
+          .where('userId', isEqualTo: userId)
+          .get()
+          .timeout(const Duration(seconds: 15));
+
+      final invoices = querySnapshot.docs
+          .map((doc) => Invoice.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+      invoices.sort((a, b) => b.uploadDate.compareTo(a.uploadDate));
+      return invoices;
+    }
   }
 
   Future<void> uploadInvoice(Invoice invoice) async {
-    await _invoicesCollection.doc(invoice.id).set(invoice.toMap());
+    await _invoicesCollection.doc(invoice.id).set(invoice.toMap()).timeout(const Duration(seconds: 15));
   }
 
   Future<void> addNotification(NotificationModel notification) async {

@@ -6,6 +6,8 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/UI/client/my_invoices_screen.dart';
 import 'package:girl_clan/core/model/invoice_model.dart';
 import 'package:girl_clan/core/services/auth_services.dart';
+import 'package:girl_clan/core/services/file_compression_service.dart';
+import 'package:girl_clan/core/services/storage_services.dart';
 import 'package:provider/provider.dart';
 
 class YearlyInvoicesScreen extends StatelessWidget {
@@ -22,6 +24,9 @@ class YearlyInvoicesScreen extends StatelessWidget {
           (context) => InvoiceViewModel(
             databaseServices: Provider.of(context, listen: false),
             authServices: Provider.of(context, listen: false),
+            storageServices: Provider.of<StorageServices>(context, listen: false),
+            compressionService:
+                Provider.of<FileCompressionService>(context, listen: false),
           ),
       child: Scaffold(
         appBar: AppBar(
@@ -62,6 +67,38 @@ class YearlyInvoicesScreen extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_off_rounded,
+                            size: 64.sp,
+                            color: redColor,
+                          ),
+                          SizedBox(height: 12.h),
+                          Text(
+                            'Unable to load invoices',
+                            style: style16B.copyWith(color: whiteColor),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 6.h),
+                          Text(
+                            snapshot.error.toString(),
+                            style: style12N.copyWith(
+                              color: greyBorderColor,
+                              height: 1.4,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 }
 
                 final invoices = snapshot.data ?? [];

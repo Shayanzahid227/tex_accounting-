@@ -6,6 +6,8 @@ import 'package:girl_clan/UI/upload_invoice/invoice_view_model.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/services/auth_services.dart';
+import 'package:girl_clan/core/services/file_compression_service.dart';
+import 'package:girl_clan/core/services/storage_services.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/utils/snackbar_utils.dart';
@@ -27,6 +29,9 @@ class UploadInvoiceScreen extends StatelessWidget {
           (context) => InvoiceViewModel(
             databaseServices: Provider.of(context, listen: false),
             authServices: Provider.of(context, listen: false),
+            storageServices: Provider.of<StorageServices>(context, listen: false),
+            compressionService:
+                Provider.of<FileCompressionService>(context, listen: false),
           ),
       child: Scaffold(
         appBar: AppBar(
@@ -360,7 +365,9 @@ class UploadInvoiceScreen extends StatelessWidget {
                                 backgroundColor: primaryColor,
                               );
                             } else {
-                              String message = 'Failed to submit invoice';
+                              String message =
+                                  model.lastUploadError ??
+                                  'Failed to submit invoice';
                               Color snackColor = redColor;
                               if (model.selectedImage == null &&
                                   model.selectedDocument == null) {
@@ -379,6 +386,21 @@ class UploadInvoiceScreen extends StatelessWidget {
                           text: 'Submit Invoice',
                           backgroundColor: primaryColor,
                         ),
+                    if (model.state == ViewState.busy) ...[
+                      SizedBox(height: 16.h),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.r),
+                        child: LinearProgressIndicator(
+                          value:
+                              model.uploadProgress > 0
+                                  ? model.uploadProgress
+                                  : null,
+                          backgroundColor: whiteColor.withOpacity(0.15),
+                          valueColor: AlwaysStoppedAnimation<Color>(ternaryColor),
+                          minHeight: 10.h,
+                        ),
+                      ),
+                    ],
                     SizedBox(height: 30.h),
                   ],
                 ),

@@ -6,6 +6,8 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/invoice_model.dart';
 import 'package:girl_clan/UI/client/invoice_preview_screen.dart';
+import 'package:girl_clan/core/services/file_compression_service.dart';
+import 'package:girl_clan/core/services/storage_services.dart';
 import 'package:provider/provider.dart';
 
 class MonthlyInvoicesGrid extends StatelessWidget {
@@ -31,6 +33,9 @@ class MonthlyInvoicesGrid extends StatelessWidget {
           (context) => InvoiceViewModel(
             databaseServices: Provider.of(context, listen: false),
             authServices: Provider.of(context, listen: false),
+            storageServices: Provider.of<StorageServices>(context, listen: false),
+            compressionService:
+                Provider.of<FileCompressionService>(context, listen: false),
           ),
       child: Scaffold(
         appBar: AppBar(
@@ -74,6 +79,38 @@ class MonthlyInvoicesGrid extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_off_rounded,
+                            size: 64.sp,
+                            color: redColor,
+                          ),
+                          SizedBox(height: 12.h),
+                          Text(
+                            'Unable to load invoices',
+                            style: style16B.copyWith(color: whiteColor),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 6.h),
+                          Text(
+                            snapshot.error.toString(),
+                            style: style12N.copyWith(
+                              color: greyBorderColor,
+                              height: 1.4,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 }
 
                 final invoices =
@@ -152,10 +189,12 @@ class MonthlyInvoicesGrid extends StatelessWidget {
                                 child:
                                     invoices[index].isImage
                                         ? Hero(
-                                          tag: invoices[index].imageUrl,
-                                          child: Image.file(
-                                            File(invoices[index].imageUrl),
-                                            fit: BoxFit.cover,
+                                          tag:
+                                              invoices[index].fileUrl ??
+                                              invoices[index].imageUrl ??
+                                              invoices[index].id,
+                                          child: _InvoiceImageThumb(
+                                            invoice: invoices[index],
                                           ),
                                         )
                                         : Container(
@@ -227,6 +266,48 @@ class MonthlyInvoicesGrid extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+class _InvoiceImageThumb extends StatelessWidget {
+  final Invoice invoice;
+  const _InvoiceImageThumb({required this.invoice});
+
+  @override
+  Widget build(BuildContext context) {
+    final url = invoice.fileUrl;
+    if (url != null && url.isNotEmpty) {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            color: primaryColor.withOpacity(0.05),
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          );
+        },
+        errorBuilder: (context, error, stack) {
+          return Container(
+            color: primaryColor.withOpacity(0.05),
+            alignment: Alignment.center,
+            child: const Icon(Icons.broken_image_outlined, color: primaryColor),
+          );
+        },
+      );
+    }
+
+    final local = invoice.imageUrl;
+    if (local != null && local.isNotEmpty) {
+      return Image.file(File(local), fit: BoxFit.cover);
+    }
+
+    return Container(
+      color: primaryColor.withOpacity(0.05),
+      alignment: Alignment.center,
+      child: const Icon(Icons.image_not_supported_outlined, color: primaryColor),
     );
   }
 }

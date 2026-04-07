@@ -15,19 +15,7 @@ class AuthServices extends BaseViewModel {
   }
 
   Future<AppUser?> login(String identifier, {String? password}) async {
-    // Check for admin local login first
-    if (identifier == AppUser.adminEmail && password == AppUser.adminUniqueNumber) {
-      _currentUser = AppUser(
-        id: 'admin_id',
-        name: 'Super Admin',
-        email: AppUser.adminEmail,
-        uniqueNumber: AppUser.adminUniqueNumber,
-        role: UserRole.admin,
-      );
-      return _currentUser;
-    }
-
-    // For clients, we expect email as identifier and a password
+    // For both admin and clients, we use Firebase Auth so rules work correctly.
     if (password != null && _databaseServices != null) {
       try {
         final userCredential = await _auth.signInWithEmailAndPassword(
@@ -38,12 +26,48 @@ class AuthServices extends BaseViewModel {
         });
 
         if (userCredential.user != null) {
-          final user = await _databaseServices!.getUser(userCredential.user!.uid);
-          if (user == null) {
+          final uid = userCredential.user!.uid;
+          final existing = await _databaseServices!.getUser(uid);
+
+          // If this is the special admin account, ensure Firestore profile exists with role=admin.
+          final isAdminLogin =
+              identifier == AppUser.adminEmail && password == AppUser.adminUniqueNumber;
+
+          if (existing == null) {
+            if (isAdminLogin) {
+              final adminUser = AppUser(
+                id: uid,
+                name: 'Super Admin',
+                email: AppUser.adminEmail,
+                uniqueNumber: AppUser.adminUniqueNumber,
+                role: UserRole.admin,
+              );
+              await _databaseServices!.upsertUser(adminUser);
+              _currentUser = adminUser;
+              return _currentUser;
+            }
+
             await _auth.signOut();
             throw Exception('User profile not found. Contact administrator.');
           }
-          _currentUser = user;
+
+          // If admin credentials are used, force role to admin (and keep in sync).
+          if (isAdminLogin && existing.role != UserRole.admin) {
+            final adminUser = AppUser(
+              id: uid,
+              name: existing.name.isNotEmpty ? existing.name : 'Super Admin',
+              email: existing.email ?? AppUser.adminEmail,
+              uniqueNumber: existing.uniqueNumber.isNotEmpty
+                  ? existing.uniqueNumber
+                  : AppUser.adminUniqueNumber,
+              role: UserRole.admin,
+            );
+            await _databaseServices!.upsertUser(adminUser);
+            _currentUser = adminUser;
+            return _currentUser;
+          }
+
+          _currentUser = existing;
           return _currentUser;
         }
       } on FirebaseAuthException catch (e) {

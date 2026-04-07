@@ -12,6 +12,7 @@ import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:girl_clan/core/services/remote_invoice_file_service.dart';
 
 class InvoicePreviewScreen extends StatefulWidget {
   final Invoice invoice;
@@ -25,6 +26,7 @@ class InvoicePreviewScreen extends StatefulWidget {
 class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
   bool _isDownloading = false;
   double _downloadProgress = 0.0;
+  final RemoteInvoiceFileService _remoteFileService = RemoteInvoiceFileService();
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +75,10 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
                         child: GestureDetector(
                           onTap: () => _expandImage(),
                           child: Hero(
-                            tag: widget.invoice.imageUrl,
+                            tag:
+                                widget.invoice.fileUrl ??
+                                widget.invoice.imageUrl ??
+                                widget.invoice.id,
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20.r),
@@ -87,10 +92,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20.r),
-                                child: Image.file(
-                                  File(widget.invoice.imageUrl),
-                                  fit: BoxFit.contain,
-                                ),
+                                child: _InvoicePreviewImage(invoice: widget.invoice),
                               ),
                             ),
                           ),
@@ -227,6 +229,8 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
   }
 
   void _expandImage() {
+    final url = widget.invoice.fileUrl;
+    final local = widget.invoice.imageUrl;
     Navigator.push(
       context,
       PageRouteBuilder(
@@ -235,8 +239,12 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
         transitionDuration: const Duration(milliseconds: 400),
         pageBuilder:
             (context, animation, secondaryAnimation) => FullScreenImageViewer(
-              imageUrl: widget.invoice.imageUrl,
-              tag: widget.invoice.imageUrl,
+              imageUrl: (url != null && url.isNotEmpty) ? url : (local ?? ''),
+              tag:
+                  (url != null && url.isNotEmpty)
+                      ? url
+                      : (local ?? widget.invoice.id),
+              isNetwork: url != null && url.isNotEmpty,
             ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
@@ -276,11 +284,27 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
         setState(() => _downloadProgress = i / 20);
       }
 
-      // 3. Real File Operation
-      final originalFile = File(widget.invoice.imageUrl);
+      // 3. Download from cloud (or fallback to local legacy path)
+      File downloaded;
+      if (widget.invoice.fileUrl != null && widget.invoice.fileUrl!.isNotEmpty) {
+        downloaded = await _remoteFileService.downloadToCache(
+          invoice: widget.invoice,
+          onProgress: (p) {
+            if (!mounted) return;
+            setState(() => _downloadProgress = p.clamp(0.0, 1.0));
+          },
+        );
+      } else {
+        final legacyPath = widget.invoice.imageUrl;
+        if (legacyPath == null || legacyPath.isEmpty) {
+          throw Exception('File is not available.');
+        }
+        downloaded = File(legacyPath);
+      }
+
       final fileName =
           widget.invoice.fileName ??
-          'PrimeTax_${DateTime.now().millisecondsSinceEpoch}.${widget.invoice.imageUrl.split('.').last}';
+          'PrimeTax_${DateTime.now().millisecondsSinceEpoch}.${downloaded.path.split('.').last}';
 
       if (hasPermission && Platform.isAndroid) {
         String savePath;
@@ -291,7 +315,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
           final downloadsDir = Directory('/storage/emulated/0/Download');
           if (await downloadsDir.exists()) {
             savePath = '${downloadsDir.path}/$fileName';
-            final newFile = await originalFile.copy(savePath);
+            final newFile = await downloaded.copy(savePath);
             _showSuccess(newFile.path, "Saved in Downloads");
             savedInDownloads = true;
           }
@@ -304,7 +328,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
           final extDir = await getExternalStorageDirectory();
           if (extDir != null) {
             savePath = '${extDir.path}/$fileName';
-            final newFile = await originalFile.copy(savePath);
+            final newFile = await downloaded.copy(savePath);
             _showSuccess(newFile.path, "Saved in App External Storage");
           } else {
             // Ultimate fallback to Share sheet
@@ -314,7 +338,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
       } else {
         // Professional fallback/standard for iOS and restricted Android
         await Share.shareXFiles([
-          XFile(widget.invoice.imageUrl),
+          XFile(downloaded.path),
         ], subject: 'Prime Tax Invoice: $fileName');
       }
 
@@ -374,8 +398,18 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
   }
 
   void _shareFile() async {
+    if (widget.invoice.fileUrl != null && widget.invoice.fileUrl!.isNotEmpty) {
+      // Share by downloading into cache first so share sheet always works.
+      final f = await _remoteFileService.downloadToCache(invoice: widget.invoice);
+      await Share.shareXFiles(
+        [XFile(f.path)],
+        text:
+            'Prime Tax Invoice - ${widget.invoice.fileName ?? 'Official Record'}',
+      );
+      return;
+    }
     await Share.shareXFiles(
-      [XFile(widget.invoice.imageUrl)],
+      [XFile(widget.invoice.imageUrl ?? '')],
       text:
           'Prime Tax Invoice - ${widget.invoice.fileName ?? 'Official Record'}',
     );
@@ -400,5 +434,35 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
         Text(value, style: style14B.copyWith(color: blackColor)),
       ],
     );
+  }
+}
+
+class _InvoicePreviewImage extends StatelessWidget {
+  final Invoice invoice;
+  const _InvoicePreviewImage({required this.invoice});
+
+  @override
+  Widget build(BuildContext context) {
+    final url = invoice.fileUrl;
+    if (url != null && url.isNotEmpty) {
+      return Image.network(
+        url,
+        fit: BoxFit.contain,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const Center(child: CircularProgressIndicator());
+        },
+        errorBuilder: (context, error, stack) {
+          return const Center(child: Icon(Icons.broken_image_outlined, size: 60));
+        },
+      );
+    }
+
+    final local = invoice.imageUrl;
+    if (local != null && local.isNotEmpty) {
+      return Image.file(File(local), fit: BoxFit.contain);
+    }
+
+    return const Center(child: Icon(Icons.image_not_supported_outlined, size: 60));
   }
 }

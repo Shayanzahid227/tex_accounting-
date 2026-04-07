@@ -23,6 +23,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -125,12 +126,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextField(
                       controller: _passwordController,
                       style: style16,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       decoration: customAuthField3.copyWith(
                         hintText: 'Enter your password',
                         prefixIcon: const Icon(
                           Icons.lock_outline_rounded,
                           color: primaryColor,
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() => _obscurePassword = !_obscurePassword);
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                            color: primaryColor,
+                          ),
                         ),
                       ),
                     ),

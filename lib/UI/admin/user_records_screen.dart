@@ -39,6 +39,24 @@ class _UserRecordsScreenState extends State<UserRecordsScreen> {
         builder: (context, model, child) {
           return Column(
             children: [
+              if (model.errorMessage != null) ...[
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(12.sp),
+                    decoration: BoxDecoration(
+                      color: redColor.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: redColor.withOpacity(0.25)),
+                    ),
+                    child: Text(
+                      model.errorMessage!,
+                      style: style12N.copyWith(color: redColor),
+                    ),
+                  ),
+                ),
+              ],
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 child: TextField(

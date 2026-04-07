@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/UI/auth/splash_screen.dart';
 import 'package:girl_clan/core/services/auth_services.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
+import 'package:girl_clan/core/services/file_compression_service.dart';
+import 'package:girl_clan/core/services/storage_services.dart';
 import 'package:girl_clan/UI/auth/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +26,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (_) => DatabaseServices()),
+        Provider(create: (_) => StorageServices()),
+        Provider(create: (_) => FileCompressionService()),
         ChangeNotifierProxyProvider<DatabaseServices, AuthServices>(
           create: (_) => AuthServices(),
           update: (context, db, auth) => auth!..setDatabaseServices(db),

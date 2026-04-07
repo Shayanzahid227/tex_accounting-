@@ -13,6 +13,8 @@ class AdminViewModel extends BaseViewModel {
 
   List<AppUser> _clients = [];
   String _searchQuery = '';
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
 
   List<AppUser> get clients =>
       _clients
@@ -32,8 +34,15 @@ class AdminViewModel extends BaseViewModel {
 
   Future<void> fetchClients() async {
     setState(ViewState.busy);
-    _clients = await _databaseServices.getAllClients();
-    setState(ViewState.idle);
+    _errorMessage = null;
+    try {
+      _clients = await _databaseServices.getAllClients();
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _clients = [];
+    } finally {
+      setState(ViewState.idle);
+    }
   }
 
   Future<bool> createClient(String name, String uniqueNumber) async {
