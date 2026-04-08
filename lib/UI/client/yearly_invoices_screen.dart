@@ -59,13 +59,13 @@ class YearlyInvoicesScreen extends StatelessWidget {
         ),
         body: Consumer<InvoiceViewModel>(
           builder: (context, model, child) {
-            return FutureBuilder<List<Invoice>>(
-              future:
+            return StreamBuilder<List<Invoice>>(
+              stream:
                   userId != null
-                      ? model.getInvoicesByUserId(userId!)
-                      : model.getMyInvoices(),
+                      ? model.streamInvoicesByUserId(userId!)
+                      : model.streamMyInvoices(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                if (!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {

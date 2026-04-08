@@ -128,6 +128,20 @@ class DatabaseServices {
     }
   }
 
+  Stream<List<Invoice>> streamInvoicesByUser(String userId) {
+    // Real-time updates; we sort locally to avoid composite index requirements.
+    return _invoicesCollection
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+          final invoices = snapshot.docs
+              .map((doc) => Invoice.fromMap(doc.data() as Map<String, dynamic>))
+              .toList();
+          invoices.sort((a, b) => b.uploadDate.compareTo(a.uploadDate));
+          return invoices;
+        });
+  }
+
   Future<void> uploadInvoice(Invoice invoice) async {
     await _invoicesCollection.doc(invoice.id).set(invoice.toMap()).timeout(const Duration(seconds: 15));
   }

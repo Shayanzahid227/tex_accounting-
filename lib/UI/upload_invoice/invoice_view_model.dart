@@ -232,4 +232,14 @@ class InvoiceViewModel extends BaseViewModel {
     if (user == null) return [];
     return await _databaseServices.getInvoicesByUser(user.id);
   }
+
+  Stream<List<Invoice>> streamInvoicesByUserId(String userId) {
+    return _databaseServices.streamInvoicesByUser(userId);
+  }
+
+  Stream<List<Invoice>> streamMyInvoices() {
+    final user = _authServices.currentUser;
+    if (user == null) return const Stream<List<Invoice>>.empty();
+    return _databaseServices.streamInvoicesByUser(user.id);
+  }
 }
