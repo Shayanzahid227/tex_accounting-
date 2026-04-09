@@ -1,6 +1,8 @@
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/model/user_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
+import 'package:girl_clan/core/services/invoice_session_cache.dart';
+import 'package:girl_clan/core/services/admin_invoice_view_cache.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -162,6 +164,8 @@ class AuthServices extends BaseViewModel {
   }
 
   Future<void> logout() async {
+    InvoiceSessionCache.instance.clear();
+    AdminInvoiceViewCache.instance.clear();
     await _auth.signOut();
     _currentUser = null;
     notifyListeners();

@@ -8,6 +8,9 @@ import 'package:girl_clan/core/model/invoice_model.dart';
 import 'package:girl_clan/UI/client/invoice_preview_screen.dart';
 import 'package:girl_clan/core/services/file_compression_service.dart';
 import 'package:girl_clan/core/services/storage_services.dart';
+import 'package:girl_clan/core/services/auth_services.dart';
+import 'package:girl_clan/core/services/invoice_session_cache.dart';
+import 'package:girl_clan/core/services/admin_invoice_view_cache.dart';
 import 'package:provider/provider.dart';
 
 class MonthlyInvoicesGrid extends StatelessWidget {
@@ -71,12 +74,34 @@ class MonthlyInvoicesGrid extends StatelessWidget {
         ),
         body: Consumer<InvoiceViewModel>(
           builder: (context, model, child) {
+            final authServices = Provider.of<AuthServices>(context, listen: false);
+            final selfId = authServices.currentUser?.id ?? '';
+            final List<Invoice>? initialFromCache;
+            if (userId != null) {
+              initialFromCache = AdminInvoiceViewCache.instance.get(userId!);
+            } else {
+              final cacheKey = selfId.isNotEmpty ? selfId : null;
+              initialFromCache =
+                  cacheKey != null
+                      ? InvoiceSessionCache.instance.getForUser(cacheKey)
+                      : null;
+            }
+
             return StreamBuilder<List<Invoice>>(
+              initialData: initialFromCache,
               stream:
                   userId != null
                       ? model.streamInvoicesByUserId(userId!)
                       : model.streamMyInvoices(),
               builder: (context, snapshot) {
+                final streamList = snapshot.data;
+                if (userId != null && streamList != null) {
+                  AdminInvoiceViewCache.instance.set(userId!, streamList);
+                } else if (userId == null &&
+                    streamList != null &&
+                    selfId.isNotEmpty) {
+                  InvoiceSessionCache.instance.set(selfId, streamList);
+                }
                 if (!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
