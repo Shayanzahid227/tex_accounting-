@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+            //title for aappppp......
             title: 'Prime Tax',
             theme: ThemeData(
               primarySwatch: Colors.teal,
@@ -64,3 +65,4 @@ class MyApp extends StatelessWidget {
   }
 }
 // Android donee
+//
